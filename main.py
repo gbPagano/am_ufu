@@ -1,5 +1,7 @@
 from rich import print
 
+from letters import LETTERS
+
 def train_perceptron(inputs, real_outputs, alpha=1):
     weights = [0] * len(inputs[0])
     bias = 0
