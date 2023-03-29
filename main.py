@@ -1,43 +1,96 @@
 from rich import print
 
-from letters import LETTERS
+from letters import ALPHABET
 
-def train_perceptron(inputs, real_outputs, alpha=1):
-    weights = [0] * len(inputs[0])
-    bias = 0
 
-    training = True
-    while training:
-        training = False
-        for i, input in enumerate(inputs):
-            error = calc_error(input, real_outputs[i], weights, bias)
-            if error:
-                for j, item in enumerate(input):
-                    training = True
-                    weights[j] += item * real_outputs[i] * alpha
-                bias += real_outputs[i] * alpha
-   
-    return weights, bias
+class Perceptron:
+    def __init__(self, alpha=1):
+        self.weights = []
+        self.alpha = alpha
 
-def calc_error(input, real_output, weights, bias):
-    pre_output = bias
 
-    for idx, item in enumerate(input):
-        pre_output += item * weights[idx]
+    def fit(self, inputs, reference_table):
+        self.inputs = inputs
+        self.reference_table = reference_table
 
-    if pre_output >= 0:
-        output = 1
-    else:
-        output = -1
-
-    error = real_output - output
-    return error
-
-def validate_perceptron(input, real_outputs, weights, bias):
-    for i, vetor in enumerate(input):
-        pre_output = bias
+        for idx in range(len(self.inputs)):
+            outputs = [-1] * len(self.inputs)
+            outputs.insert(idx, 1)
+            
+            result = self._train_neuron(outputs)
+            self.weights.append(result)
+        
+        self._validate_perceptron()
     
-        for idx, item in enumerate(vetor):
+
+    def predict(self, input):
+        result = []
+        for weights, bias in self.weights:
+
+            pre_output = bias
+        
+            for i, item in enumerate(input):
+                pre_output += item * weights[i]
+
+            if pre_output >= 0:
+                output = 1
+            else:
+                output = -1
+
+            result.append(output)
+        
+        idx = result.index(1)
+        return self.reference_table[idx]
+
+
+
+    def _validate_perceptron(self):
+        for idx, (weights, bias) in enumerate(self.weights):
+            outputs = [-1] * len(self.inputs)
+            outputs.insert(idx, 1)
+
+            if not self._validate_neuron(outputs, weights, bias):
+                raise Exception("It was not possible to train the neuron, possibly it is not a linearly solvable problem")
+
+    def _validate_neuron(self, real_outputs, weights, bias):
+        for i, vetor in enumerate(self.inputs):
+            pre_output = bias
+        
+            for idx, item in enumerate(vetor):
+                pre_output += item * weights[idx]
+
+            if pre_output >= 0:
+                output = 1
+            else:
+                output = -1
+
+            if output != real_outputs[i]:
+                return False
+
+        return True
+
+
+    def _train_neuron(self, real_outputs):
+        weights = [0] * len(self.inputs[0])
+        bias = 0
+
+        training = True
+        while training:
+            training = False
+            for i, input in enumerate(self.inputs):
+                error = self._calc_error(input, real_outputs[i], weights, bias)
+                if error:
+                    for j, item in enumerate(input):
+                        training = True
+                        weights[j] += item * real_outputs[i] * self.alpha
+                    bias += real_outputs[i] * self.alpha
+       
+        return weights, bias
+
+    def _calc_error(self, input, real_output, weights, bias):
+        pre_output = bias
+
+        for idx, item in enumerate(input):
             pre_output += item * weights[idx]
 
         if pre_output >= 0:
@@ -45,102 +98,8 @@ def validate_perceptron(input, real_outputs, weights, bias):
         else:
             output = -1
 
-        if output != real_outputs[i]:
-            return False
-
-    return True
-
-
-def train_multi_outputs_perceptron(inputs, alpha=1):
-    weights = []
-    
-    for idx in range(len(inputs)):
-        outputs = [-1] * (len(inputs) - 1)
-        outputs.insert(idx, 1)
-        
-        result = train_perceptron(inputs, outputs, alpha)
-        weights.append(result)
-
-    return weights
-    
-
-def validate_multi_outputs_perceptrons(inputs, all_weights):
-    
-    for idx, (weights, bias)  in enumerate(all_weights):
-        outputs = [-1] * (len(inputs) - 1)
-        outputs.insert(idx, 1)
-
-        if not validate_perceptron(inputs, outputs, weights, bias):
-            return False
-
-    return True
-
-def check_multi_outputs_perceptrons(input, all_weights, truth_table):
-
-    result = []
-    for weights, bias in all_weights:
-
-        pre_output = bias
-    
-        for i, item in enumerate(input):
-            pre_output += item * weights[i]
-
-        if pre_output >= 0:
-            output = 1
-        else:
-            output = -1
-
-        result.append(output)
-    
-    idx = result.index(1)
-    return truth_table[idx]
-
-
-
-
-
-X = [
-     1, -1, -1, -1, 1,
-    -1, 1, -1, 1, -1,
-    -1, -1, 1, -1, -1,
-    -1, 1, -1, 1, -1,
-    1, -1, -1, -1, 1,
-]
-T = [
-    1, 1, 1, 1, 1,
-    -1, -1, 1, -1, -1,
-    -1, -1, 1, -1, -1,
-    -1, -1, 1, -1, -1,
-    -1, -1, 1, -1, -1,
-]
-C = [
-    1, 1, 1, 1, 1,
-    1, -1, -1, -1, -1,
-    1, -1, -1, -1, -1,
-    1, -1, -1, -1, -1,
-    1, 1, 1, 1, 1,
-]
-
-
-inputs = [X, T, C]
-
-outputs = [1, -1] 
-
-# weights, bias = train_perceptron(inputs, outputs)
-
-# result = validate_perceptron(inputs, outputs, weights, bias)
-
-# print(result)
-
-weights = train_multi_outputs_perceptron(inputs)
-valid = validate_multi_outputs_perceptrons(inputs, weights)
-
-print(valid)
-
-truth_table = ["X", "T", "C"]
-result = check_multi_outputs_perceptrons(C, weights, truth_table)
-
-print(result)
+        error = real_output - output
+        return error
 
 
 
