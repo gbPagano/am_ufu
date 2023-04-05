@@ -118,7 +118,7 @@ C = [
 ]
 
 
-inputs = [X, T, C]
+inputs = [X, T]
 
 outputs = [1, -1] 
 
@@ -130,7 +130,7 @@ outputs = [1, -1]
 
 weights = train_multi_outputs_perceptron(inputs)
 valid = validate_multi_outputs_perceptrons(inputs, weights)
-print(ALPHABET)
+# print(ALPHABET)
 
 print(valid)
 
