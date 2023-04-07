@@ -98,8 +98,7 @@ class Perceptron:
         else:
             output = -1
 
-        error = real_output - output
-        return error
+        return real_output != output
 
 
 
