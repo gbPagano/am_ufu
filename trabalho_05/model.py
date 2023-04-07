@@ -5,13 +5,15 @@ class Perceptron:
         self.alpha = alpha
 
 
-    def fit(self, inputs, real_outputs):
+    def fit(self, inputs, raw_outputs):
+        self.iterations = 0
         self.inputs = inputs
-        self.outputs = real_outputs
+        self.outputs = raw_outputs
 
-        for idx in range(len(self.inputs)):
+        for i in range(len(self.inputs)):
             outputs = [-1] * 9
-            outputs.insert(idx, self.outputs[idx])
+            idx = self.outputs[i]
+            outputs.insert(idx, 1)
 
             result = self._train_neuron(outputs)
             self.weights.append(result)
@@ -34,52 +36,61 @@ class Perceptron:
                 output = -1
 
             result.append(output)
-        
-        idx = result.index(1)
-        return "Failed" if not idx else idx
-
+        try:
+            return result.index(1)
+        except ValueError:
+            return "Failed"
 
 
     def _validate_perceptron(self):
+        self.acertos = 0
+        self.total= 0
         for idx, (weights, bias) in enumerate(self.weights):
             outputs = [-1] * len(self.inputs)
             outputs.insert(idx, 1)
 
-            if not self._validate_neuron(outputs, weights, bias):
-                raise Exception("It was not possible to train the neuron, possibly it is not a linearly solvable problem")
+            self._validate_neuron(outputs, weights, bias)
+        
+        result = self.acertos/self.total
+
+        print(f"Trained with {result*100}% of precision")
 
     def _validate_neuron(self, real_outputs, weights, bias):
         for i, vetor in enumerate(self.inputs):
+            self.total += 1
             pre_output = bias
-        
-            for idx, item in enumerate(vetor):
-                pre_output += item * weights[idx]
+            idx = self.outputs[i]
+
+            for j, item in enumerate(vetor):
+                pre_output += item * weights[j]
 
             if pre_output >= 0:
                 output = 1
             else:
                 output = -1
 
-            if output != real_outputs[i]:
-                return False
+            if output == real_outputs[idx]:
+                self.acertos += 1
 
-        return True
 
 
     def _train_neuron(self, real_outputs):
         weights = [0] * len(self.inputs[0])
         bias = 0
-
+        
         training = True
         while training:
+            print("iteration:", self.iterations)
+            self.iterations += 1
             training = False
             for i, input in enumerate(self.inputs):
-                error = self._calc_error(input, real_outputs[i], weights, bias)
+                idx = self.outputs[i]
+                error = self._calc_error(input, real_outputs[idx], weights, bias)
                 if error:
                     for j, item in enumerate(input):
                         training = True
-                        weights[j] += item * real_outputs[i] * self.alpha
-                    bias += real_outputs[i] * self.alpha
+                        weights[j] += item * real_outputs[idx] * self.alpha
+                    bias += real_outputs[idx] * self.alpha
        
         return weights, bias
 
@@ -94,8 +105,7 @@ class Perceptron:
         else:
             output = -1
 
-        error = real_output - output
-        return error
+        return real_output != output
 
 
 
