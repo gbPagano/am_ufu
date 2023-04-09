@@ -1,5 +1,5 @@
 import numpy as np
-
+from rich.progress import track
 
 class Adaline:
     def __init__(self, alpha: float = 0.01):
@@ -12,7 +12,7 @@ class Adaline:
         
         inputs = np.array([np.append(vector, 1) for vector in inputs])  # adding bias
 
-        for _ in range(epochs):
+        for _ in track(range(epochs), description="Processing..."):
             quadratic_error = 0
             for input, real_output in zip(inputs, outputs):
                 net = sum(input * self.weights)
@@ -24,7 +24,7 @@ class Adaline:
                 self.weights += self.alpha * (real_output - predicted) * input
             
             
-            print(self.weights)
+            # print(self.weights)
             self.errors.append(quadratic_error)
 
         # self.weights[2] += 0.2
