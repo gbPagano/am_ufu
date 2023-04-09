@@ -12,7 +12,7 @@ inputs = np.array([np.array(value) for value in data.rows()])
 from rich.traceback import install; install()
 ia = Adaline()
 
-ia.fit(inputs, outputs, epochs=200)
+ia.fit(inputs, outputs)
 
 
 dots = list(zip(data.get_column("s1"), data.get_column("s2")))
