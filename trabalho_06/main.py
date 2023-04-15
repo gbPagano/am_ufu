@@ -24,7 +24,7 @@ red_x, red_y = list(zip(*red))
 
 plt.figure(figsize=(14,6))
 plt.subplot(121)
-x = np.arange(0., 5., 0.2)
+x = np.linspace(0., 5., 100)
 plt.plot(x, (-x*ia.weights[0] - ia.weights[2]) / ia.weights[1])
 
 
@@ -35,6 +35,7 @@ plt.axis([0, 3, 0, 3])
 
 plt.subplot(122)
 plt.plot(ia.errors)
+plt.axis(ymin=0)
 
 
 plt.show()
