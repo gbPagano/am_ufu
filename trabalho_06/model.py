@@ -25,7 +25,7 @@ class Adaline:
             
             
             # print(self.weights)
-            self.errors.append(quadratic_error)
+            self.errors.append(quadratic_error / len(inputs))
 
         # self.weights[2] += 0.2
         self._validate(inputs, outputs)
