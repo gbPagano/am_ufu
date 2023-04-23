@@ -24,32 +24,5 @@ class Adaline:
                 self.weights += self.alpha * (real_output - predicted) * input
             
             
-            # print(self.weights)
             self.errors.append(quadratic_error / len(inputs))
-
-        # self.weights[2] += 0.2
-        self._validate(inputs, outputs)
-
-
-    def test(self, inputs, outputs):
-        
-        total = 0
-        errors = 0
-        for input, real_output in zip(inputs, outputs):
-            net = sum(input * self.weights)
-                
-            predicted = 1 if net >= self.theta else -1  # linear function
             
-            total += 1
-            if predicted != real_output:
-                errors += 1
-                print(input)
-
-        return (total - errors) / total * 100
-
-
-
-    def _validate(self, inputs, outputs):
-        result = self.test(inputs, outputs)
-        
-        print(f"Succesfully trained with: {result}% of precision")
