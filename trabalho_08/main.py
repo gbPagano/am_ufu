@@ -10,7 +10,7 @@ class Tanh:
 
 
 class Layer:
-    def __init__(self, neurons, len_inputs, function):
+    def __init__(self, len_inputs, neurons, function):
         shape = neurons, len_inputs
         self.weights = np.random.uniform(-0.5, 0.5, size=shape)
         self.f = function
@@ -23,7 +23,7 @@ class Layer:
 
 
 class NeuralNetwork:
-    def __init__(self, *layers):
+    def __init__(self, *layers: Layer):
         self.layers = list(layers)
         
     def forward(self, x_input):
@@ -56,9 +56,9 @@ x_input = np.array([
 
 
 rede = NeuralNetwork(
-    Layer(neurons=3, len_inputs=3, function=Tanh()),
-    Layer(neurons=2, len_inputs=4, function=Tanh()),
-    Layer(neurons=1, len_inputs=3, function=Tanh()),
+    Layer(len_inputs=3, neurons=3, function=Tanh()),
+    Layer(len_inputs=4, neurons=2, function=Tanh()),
+    Layer(len_inputs=3, neurons=1, function=Tanh()),
 )
 rede.layers[0].weights = weights_1
 rede.layers[1].weights = weights_2
