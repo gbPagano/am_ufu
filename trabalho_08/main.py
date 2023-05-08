@@ -88,6 +88,7 @@ class NeuralNetwork:
             self.mean_squared_error = sum(errors) / len(errors)
             
             if not epoch % 100:
+                print(self.layers[-1].weights[0])
                 print(f"MSE: {self.mean_squared_error}")
                 
                 
