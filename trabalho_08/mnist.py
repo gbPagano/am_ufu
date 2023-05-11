@@ -119,9 +119,51 @@ def number_to_neurons(n):
     res[n] = 1
     return res
 
+def evaluate(rede, x, y, total, inicial=0):
+    points = 0
+    for idx in range(1000,total):
+        correct = np.argmax(y[idx])
+        predict = np.argmax(rede.predict(x[idx]))
+        if correct == predict:
+            points += 1
+
+    return points/total * 100
+
+
+
+def save_weights(rede, n_cam):
+    with open("weights.npy", "wb") as f:
+        for idx in range(n_cam):
+            np.save(f, rede.layers[idx].weights)
+
+def load_weights(rede, n_cam):
+    with open("weights.npy", "rb") as f:
+        for idx in range(n_cam):
+            rede.layers[idx].weights = np.load(f)
+
+
+def kaggle_predict(rede, n):
+    data_test = pl.read_csv("test.csv")
+    x_test = np.array([row for row in data_test.rows()]) / 255
+    kaggle_df = pl.read_csv("sample_submission.csv")
+    predicts = []
+    for idx in range(28_000):
+        predict = np.argmax(rede.predict(x_test[idx]))
+        predicts.append(predict)
+
+    df_predicts = pl.DataFrame({
+        "Label": predicts
+    })
+
+    submission = kaggle_df.update(df_predicts)
+    submission.write_csv(f"predicts_kaggle_{n}.csv")
+
+
 data_train = pl.read_csv("train.csv")
 
 y_train = np.array(data_train.drop_in_place("label"))
 y_train = np.array([number_to_neurons(y) for y in y_train])
 
 x_train = np.array([row for row in data_train.rows()]) / 255
+
+
