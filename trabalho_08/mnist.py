@@ -49,6 +49,7 @@ class NeuralNetwork:
             layer.idx = idx + 1
         self.layers[-1].last = True
         self.len_inputs = self.layers[0].len_inputs
+        self.all_mse = []
         
     def __repr__(self):
         return f"NeuralNetwork (Num_Layers: {len(self.layers)}, Len_Inputs: {self.len_inputs}, Layers: {self.layers})"
@@ -100,6 +101,7 @@ class NeuralNetwork:
                 
             errors = np.array([sum(error) for error in (y_train - outputs) ** 2])
             self.mean_squared_error = sum(errors) / len(errors)
+            self.all_mse.append(self.mean_squared_error)
             
             if not epoch % 100:
                 print(f"MSE: {self.mean_squared_error}")
@@ -121,7 +123,7 @@ def number_to_neurons(n):
 
 def evaluate(rede, x, y, total, inicial=0):
     points = 0
-    for idx in range(1000,total):
+    for idx in range(inicial ,total):
         correct = np.argmax(y[idx])
         predict = np.argmax(rede.predict(x[idx]))
         if correct == predict:

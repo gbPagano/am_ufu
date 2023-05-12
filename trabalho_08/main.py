@@ -1,14 +1,8 @@
-
 import numpy as np
-from numba import njit, jit, experimental
+
 
 class Tanh: 
     def activate(self, x):
-        return self.f(x)
-
-    @staticmethod
-    @jit(nopython=True)
-    def f(x):
         return np.tanh(x)
  
     def derivative(self, x):
