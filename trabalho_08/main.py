@@ -49,6 +49,7 @@ class NeuralNetwork:
             layer.idx = idx + 1
         self.layers[-1].last = True
         self.len_inputs = self.layers[0].len_inputs
+        self.all_mse = []
         
     def __repr__(self):
         return f"NeuralNetwork (Num_Layers: {len(self.layers)}, Len_Inputs: {self.len_inputs}, Layers: {self.layers})"
@@ -85,6 +86,7 @@ class NeuralNetwork:
             out = self._forward(x_train)
             errors = np.array([sum(error) for error in (y_train - out) ** 2])
             self.mean_squared_error = sum(errors) / len(errors)
+            self.all_mse.append(self.mean_squared_error)
             
             if not epoch % 100:
                 print(f"MSE: {self.mean_squared_error}")
@@ -107,13 +109,18 @@ rede = NeuralNetwork(
     Layer(len_inputs=1, neurons=4, function=Tanh()),
     Layer(len_inputs=4, neurons=1, function=Tanh()),
 )
-rede.fit(x_train, y_train)
-out = rede.predict(x_train)
+rede.fit(x_train, y_train, epochs=2000, alpha=0.05)
 
 
 import matplotlib.pyplot as plt
 
+out = rede.predict(x_train)
 
 plt.scatter(x_train, y_train, color="green")
 plt.scatter(x_train, out, color="red")
+plt.legend(['Official', 'Trained'])
+plt.show()
+
+
+plt.plot(rede.all_mse)
 plt.show()
